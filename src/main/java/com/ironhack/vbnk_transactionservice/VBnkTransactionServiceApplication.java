@@ -9,8 +9,8 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 @EnableEurekaClient
 public class VBnkTransactionServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(VBnkTransactionServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(VBnkTransactionServiceApplication.class, args);
+    }
 
 }
