@@ -2,9 +2,11 @@ package com.ironhack.vbnk_transactionservice.data.dao;
 
 import com.ironhack.vbnk_dataservice.data.Money;
 import com.ironhack.vbnk_dataservice.utils.MoneyConverter;
+import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
 import com.ironhack.vbnk_transactionservice.data.TransactionStatus;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
+import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,27 +27,35 @@ public class VBTransaction {
     
     @Enumerated(EnumType.STRING)
     TransactionStatus status;
-    
+    @Embedded
+    TransactionResult result;
     @CreationTimestamp
     Instant creationDate;
     @UpdateTimestamp
     Instant modification;
     Instant expirationDate;
     
-    String originAccount;//could be ID or AccountNumber(if 3rd party)
-    String destAccount;
+    String originAccountRef;//could be ID or AccountNumber(if 3rd party)
+    String destAccountRef;
     String senderID;
     @Convert(converter = MoneyConverter.class)
     Money quantity;
-    public static VBTransaction fromDTO(TransactionDTO entity){
-        return new VBTransaction().setId(entity.getId())
-                .setType(entity.getType())
-                .setStatus(entity.getStatus())
-                .setExpirationDate(entity.getExpirationDate())
-                .setOriginAccount(entity.getOriginAccount())
-                .setDestAccount(entity.getDestAccount())
-                .setSenderID(entity.getSenderID())
-                .setQuantity(new Money(entity.getAmount(),entity.getCurrency()));
+    @Convert(converter = MoneyConverter.class)
+    Money resBalance;
+    @Embedded
+    TransactionDetails details;
+    public static VBTransaction fromDTO(TransactionDTO dto){
+        return new VBTransaction().setId(dto.getId())
+                .setType(dto.getType())
+                .setStatus(dto.getStatus())
+                .setExpirationDate(dto.getExpirationDate())
+                .setOriginAccountRef(dto.getOriginAccount())
+                .setDestAccountRef(dto.getDestAccount())
+                .setSenderID(dto.getSenderID())
+                .setQuantity(new Money(dto.getAmount(),dto.getCurrency()))
+                .setResBalance(new Money(dto.getBalanceAmount(),dto.getBalanceCurrency()))
+                .setResult(dto.getResult())
+                .setDetails(dto.getDetails());
     }
 
 }
