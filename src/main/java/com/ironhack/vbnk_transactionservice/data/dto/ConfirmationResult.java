@@ -1,23 +1,16 @@
 package com.ironhack.vbnk_transactionservice.data.dto;
 
 import com.ironhack.vbnk_transactionservice.data.TransactionState;
-import com.ironhack.vbnk_transactionservice.data.DenyReason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Embeddable;
-
-@Embeddable
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionResult {
-    String transactionRef;
-    TransactionState transactionState;
-    private boolean validated;
-    private DenyReason denyReason;
-
-
+public class ConfirmationResult {
+    TransactionState resState;
+    String transactionID;
+    String key;
 }

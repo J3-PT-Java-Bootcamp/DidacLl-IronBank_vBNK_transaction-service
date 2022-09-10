@@ -1,7 +1,5 @@
 package com.ironhack.vbnk_transactionservice.controllers;
 
-import com.ironhack.vbnk_transactionservice.data.TransactionStatus;
-import com.ironhack.vbnk_transactionservice.data.dao.VBTransaction;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 
 import java.net.http.HttpResponse;

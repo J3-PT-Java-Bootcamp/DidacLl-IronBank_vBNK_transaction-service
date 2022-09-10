@@ -1,7 +1,7 @@
 package com.ironhack.vbnk_transactionservice.data.dto;
 
 import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
-import com.ironhack.vbnk_transactionservice.data.TransactionStatus;
+import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.dao.VBTransaction;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class TransactionDTO {
     String id;
     TransactionType type;
 
-    TransactionStatus status;
+    TransactionState state;
 
     Instant expirationDate;
 
@@ -38,7 +38,7 @@ public class TransactionDTO {
     public static TransactionDTO fromEntity(VBTransaction entity){
         return new TransactionDTO().setId(entity.getId())
                 .setType(entity.getType())
-                .setStatus(entity.getStatus())
+                .setState(entity.getState())
                 .setExpirationDate(entity.getExpirationDate())
                 .setOriginAccount(entity.getOriginAccountRef())
                 .setDestAccount(entity.getDestAccountRef())

@@ -1,9 +1,7 @@
 package com.ironhack.vbnk_transactionservice.data.dto;
 
 import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
-import com.ironhack.vbnk_transactionservice.data.TransactionStatus;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
-import com.ironhack.vbnk_transactionservice.data.dao.VBTransaction;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Currency;
 
-import static com.ironhack.vbnk_transactionservice.data.TransactionStatus.PENDING;
+import static com.ironhack.vbnk_transactionservice.data.TransactionState.PENDING;
 
 @NoArgsConstructor
 @Getter @Setter
@@ -27,18 +25,16 @@ public class TransactionRequest {
     TransactionDetails details;
 
 
-
-
-    public static TransactionDTO copyToDTO(TransactionRequest reque){
+    public static TransactionDTO copyToDTO(TransactionRequest request){
         return new TransactionDTO()
-                .setType(reque.getType())
-                .setStatus(PENDING)
-                .setExpirationDate(reque.getExpirationDate())
-                .setOriginAccount(reque.getOriginAccount())
-                .setDestAccount(reque.getDestAccount())
-                .setSenderID(reque.getSenderID())
-                .setAmount(reque.getAmount())
-                .setCurrency(reque.getCurrency())
-                .setDetails(reque.details);
+                .setType(request.getType())
+                .setState(PENDING)
+                .setExpirationDate(request.getExpirationDate())
+                .setOriginAccount(request.getOriginAccount())
+                .setDestAccount(request.getDestAccount())
+                .setSenderID(request.getSenderID())
+                .setAmount(request.getAmount())
+                .setCurrency(request.getCurrency())
+                .setDetails(request.details);
     }
 }

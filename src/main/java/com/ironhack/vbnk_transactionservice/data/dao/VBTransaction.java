@@ -3,7 +3,7 @@ package com.ironhack.vbnk_transactionservice.data.dao;
 import com.ironhack.vbnk_dataservice.data.Money;
 import com.ironhack.vbnk_dataservice.utils.MoneyConverter;
 import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
-import com.ironhack.vbnk_transactionservice.data.TransactionStatus;
+import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
@@ -26,7 +26,7 @@ public class VBTransaction {
     TransactionType type;
     
     @Enumerated(EnumType.STRING)
-    TransactionStatus status;
+    TransactionState state;
     @Embedded
     TransactionResult result;
     @CreationTimestamp
@@ -47,7 +47,7 @@ public class VBTransaction {
     public static VBTransaction fromDTO(TransactionDTO dto){
         return new VBTransaction().setId(dto.getId())
                 .setType(dto.getType())
-                .setStatus(dto.getStatus())
+                .setState(dto.getState())
                 .setExpirationDate(dto.getExpirationDate())
                 .setOriginAccountRef(dto.getOriginAccount())
                 .setDestAccountRef(dto.getDestAccount())
