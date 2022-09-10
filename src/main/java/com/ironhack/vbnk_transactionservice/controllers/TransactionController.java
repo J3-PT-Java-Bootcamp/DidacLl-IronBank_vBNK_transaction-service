@@ -1,5 +1,6 @@
 package com.ironhack.vbnk_transactionservice.controllers;
 
+import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 
 import java.net.http.HttpResponse;
@@ -8,9 +9,10 @@ import java.util.List;
 
 public interface TransactionController {
     HttpResponse<TransactionDTO> getTransaction(String id);
-    HttpResponse<TransactionDTO> updateTransaction(boolean isOk);
+    HttpResponse<TransactionDTO> updateTransaction(ConfirmationResult result);
     void deleteTransaction(String id);
     HttpResponse<List<TransactionDTO>> getAllTransByDate(Instant date);
 
 
+    HttpResponse<List<TransactionDTO>> getAllTransByDateAndUser(String userId, Instant date);
 }

@@ -8,9 +8,9 @@ import java.net.http.HttpResponse;
 import java.security.Principal;
 
 public interface MainController {
-    HttpResponse<TransactionResult> transferTo(Principal sender, TransactionRequest request);
+    HttpResponse<TransactionResult> transferTo( TransactionRequest request);
 
-    HttpResponse<TransactionResult> orderPaymentTo(Principal sender, TransactionRequest request);
+    HttpResponse<TransactionResult> orderPaymentTo(TransactionRequest request);
     void updatePendingTransaction(ConfirmationResult result);
 
 }
