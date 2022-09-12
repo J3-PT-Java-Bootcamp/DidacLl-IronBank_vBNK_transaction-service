@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 public class WebSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.eraseCredentials(false);
         KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
         auth.authenticationProvider(keycloakAuthenticationProvider);
@@ -29,20 +30,19 @@ public class WebSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapt
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        super.configure(http);
+        super.configure(http);
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/v1/data/public/request").permitAll()
-                .antMatchers("/v1/data/auth").hasAnyRole("admin", "client")
-                .antMatchers("/v1/data/main").hasAnyRole("admin", "customer")
-                .antMatchers("/v1/data/client").hasRole("client")
                 .antMatchers("/v1/**").hasRole("developer")
+                .antMatchers("/v1/data/client/**").permitAll()
+                .antMatchers("/v1/trans/public/**").permitAll()
+                .antMatchers("/v1/trans/auth/**").hasRole("admin")
+                .antMatchers("/v1/trans/main/**").hasAnyRole("admin", "customer")
                 .anyRequest()
                 .authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
-
 }

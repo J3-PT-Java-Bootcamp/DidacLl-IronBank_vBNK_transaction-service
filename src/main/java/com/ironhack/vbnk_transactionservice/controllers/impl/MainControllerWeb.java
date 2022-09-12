@@ -6,16 +6,20 @@ import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.http.HttpResponse;
-import java.security.Principal;
 @RestController
 @RequestMapping("v1/trans/main")
 public class MainControllerWeb implements MainController {
 
     @Autowired
     TransactionService service;
+
+
     @Override
     @PostMapping( "/trf")
     public HttpResponse<TransactionResult> transferTo( @RequestBody TransactionRequest request) {
