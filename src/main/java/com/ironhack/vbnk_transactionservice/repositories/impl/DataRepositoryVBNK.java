@@ -43,7 +43,7 @@ public class DataRepositoryVBNK implements DataRepository {
     @Override
     public VBUserDTO getUser(String id) {
         var res = client.get()
-                .uri("/v1/data/auth/users")
+                .uri("/v1/data/client/users")
                 .retrieve()
                 .bodyToMono(VBUserDTO.class)
                 .block();
