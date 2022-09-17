@@ -1,15 +1,12 @@
-package com.ironhack.vbnk_transactionservice.controllers.impl;
+package com.ironhack.vbnk_transactionservice.data.controllers.impl;
 
-import com.ironhack.vbnk_transactionservice.controllers.ThirdPartyController;
+import com.ironhack.vbnk_transactionservice.data.controllers.ThirdPartyController;
 import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 @RequestMapping("v1/trans/client")

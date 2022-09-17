@@ -4,23 +4,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
 @Getter @Setter
-public class CounterLog {
+public class DailyLog {
     @Id
-    @Value("counter")
     String id;
-
     @UpdateTimestamp
-    Instant update;
-
+    LocalDate updateDate;
     Long transferCounter;
     Long paymentCounter;
     Long interestCounter;

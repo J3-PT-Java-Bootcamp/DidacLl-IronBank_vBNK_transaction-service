@@ -1,12 +1,9 @@
 package com.ironhack.vbnk_transactionservice.repositories.impl;
 
-import com.ironhack.vbnk_dataservice.data.Money;
-import com.ironhack.vbnk_dataservice.data.dto.accounts.AccountDTO;
-import com.ironhack.vbnk_dataservice.data.dto.users.AccountHolderDTO;
-import com.ironhack.vbnk_dataservice.data.dto.users.VBUserDTO;
 import com.ironhack.vbnk_transactionservice.data.dto.DataValidationRequest;
 import com.ironhack.vbnk_transactionservice.data.dto.DataValidationResponse;
 import com.ironhack.vbnk_transactionservice.repositories.DataRepository;
+import com.ironhack.vbnk_transactionservice.utils.Money;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 @Repository
 public class DataRepositoryVBNK implements DataRepository {
@@ -39,30 +35,30 @@ public class DataRepositoryVBNK implements DataRepository {
                 .bodyToMono(String.class)
                 .block();
     }
-
-    @Override
-    public VBUserDTO getUser(String id) {
-        var res = client.get()
-                .uri("/v1/data/client/users")
-                .retrieve()
-                .bodyToMono(VBUserDTO.class)
-                .block();
-        return res;
-    }
-
-    @Override
-    public AccountDTO getAccount(String ref) {
-        return client.get()
-                .uri("/v1/data/auth/users")
-                .retrieve()
-                .bodyToMono(AccountDTO.class)
-                .block();
-    }
-
-    @Override
-    public List<AccountHolderDTO> getOwners(String accountRef) {
-        return null;
-    }
+//
+//    @Override
+//    public VBUserDTO getUser(String id) {
+//        var res = client.get()
+//                .uri("/v1/data/client/users")
+//                .retrieve()
+//                .bodyToMono(VBUserDTO.class)
+//                .block();
+//        return res;
+//    }
+//
+//    @Override
+//    public AccountDTO getAccount(String ref) {
+//        return client.get()
+//                .uri("/v1/data/auth/users")
+//                .retrieve()
+//                .bodyToMono(AccountDTO.class)
+//                .block();
+//    }
+//
+//    @Override
+//    public List<AccountHolderDTO> getOwners(String accountRef) {
+//        return null;
+//    }
 
     @Override
     public DataValidationResponse validateAccount(DataValidationRequest request) {

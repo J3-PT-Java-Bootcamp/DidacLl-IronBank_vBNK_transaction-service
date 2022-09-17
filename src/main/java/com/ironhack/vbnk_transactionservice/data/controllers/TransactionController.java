@@ -1,4 +1,4 @@
-package com.ironhack.vbnk_transactionservice.controllers;
+package com.ironhack.vbnk_transactionservice.data.controllers;
 
 import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;

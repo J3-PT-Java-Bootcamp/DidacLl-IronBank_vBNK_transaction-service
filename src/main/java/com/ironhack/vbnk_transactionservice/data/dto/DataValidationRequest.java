@@ -1,6 +1,6 @@
 package com.ironhack.vbnk_transactionservice.data.dto;
 
-import com.ironhack.vbnk_dataservice.data.Money;
+import com.ironhack.vbnk_transactionservice.utils.Money;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

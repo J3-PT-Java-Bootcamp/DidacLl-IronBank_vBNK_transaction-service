@@ -1,15 +1,18 @@
-package com.ironhack.vbnk_transactionservice.controllers;
+package com.ironhack.vbnk_transactionservice.data.controllers;
 
 import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
+import javax.naming.ServiceUnavailableException;
 import java.net.http.HttpResponse;
-import java.security.Principal;
 
 public interface AuthController {
 
-    HttpResponse<TransactionResult> transfer(TransactionRequest request);
+    ResponseEntity<TransferResponse> transfer( Authentication auth,TransactionRequest request) throws ServiceUnavailableException;
 
     HttpResponse<TransactionResult> orderPayment(TransactionRequest request);
     void updatePendingTransaction(ConfirmationResult result);

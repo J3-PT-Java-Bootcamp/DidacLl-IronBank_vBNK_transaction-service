@@ -1,12 +1,12 @@
 package com.ironhack.vbnk_transactionservice.data.dao;
 
-import com.ironhack.vbnk_dataservice.data.Money;
-import com.ironhack.vbnk_dataservice.utils.MoneyConverter;
 import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
 import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
+import com.ironhack.vbnk_transactionservice.utils.Money;
+import com.ironhack.vbnk_transactionservice.utils.MoneyConverter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,7 +29,7 @@ public class VBTransaction {
     TransactionState state;
     @Embedded
     TransactionResult result;
-    @CreationTimestamp
+    @CreationTimestamp @Column(updatable = false)
     Instant creationDate;
     @UpdateTimestamp
     Instant modification;

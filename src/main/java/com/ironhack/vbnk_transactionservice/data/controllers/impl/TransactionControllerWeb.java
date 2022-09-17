@@ -1,6 +1,6 @@
-package com.ironhack.vbnk_transactionservice.controllers.impl;
+package com.ironhack.vbnk_transactionservice.data.controllers.impl;
 
-import com.ironhack.vbnk_transactionservice.controllers.TransactionController;
+import com.ironhack.vbnk_transactionservice.data.controllers.TransactionController;
 import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import com.ironhack.vbnk_transactionservice.repositories.DataRepository;
@@ -28,8 +28,7 @@ public class TransactionControllerWeb implements TransactionController {
         var authentication = SecurityContextHolder.getContext().getAuthentication().getCredentials();
         var tokenString = ((RefreshableKeycloakSecurityContext) authentication).getTokenString();
         System.out.println(tokenString);
-        var val = dataRepository.ping(ping.replace('a', 'i'));
-        return val;
+        return dataRepository.ping(ping.replace('a', 'i'));
     }
 
     @Override

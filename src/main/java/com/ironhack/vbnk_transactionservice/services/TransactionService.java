@@ -4,8 +4,11 @@ import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
-import org.springframework.stereotype.Service;
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
+import javax.naming.ServiceUnavailableException;
 import java.net.http.HttpResponse;
 import java.security.Principal;
 import java.time.Instant;
@@ -42,7 +45,7 @@ public interface TransactionService {
 
     HttpResponse<TransactionResult> initiateTransferRequest(Principal sender, TransactionRequest request);
 
-    HttpResponse<TransactionResult> initiateTransferRequest(TransactionRequest request);
+    ResponseEntity<TransferResponse> initiateTransferRequest(TransactionRequest request, Authentication authentication) throws ServiceUnavailableException;
 
     HttpResponse<TransactionResult> initiatePaymentRequest(TransactionRequest request);
 }
