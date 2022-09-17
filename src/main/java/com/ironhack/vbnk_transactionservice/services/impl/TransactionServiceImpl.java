@@ -1,9 +1,10 @@
 package com.ironhack.vbnk_transactionservice.services.impl;
 
-import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
+import com.ironhack.vbnk_transactionservice.data.http.request.FraudValidationRequest;
+import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
+import com.ironhack.vbnk_transactionservice.data.http.request.TransactionRequest;
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransactionResult;
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
@@ -27,8 +28,10 @@ import java.util.List;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    private WebClient client;
-    private static final String TARGET_SERVICE = "vbnk-data-service";
+    private WebClient dataClient;
+    private WebClient antiFraudClient;
+    private static final String[] DATA_SERVICE = new String[]{"vbnk-data-service","/v1/data/client/test/ping"};
+    private static final String[] ANTI_FRAUD_SERVICE = new String[]{"vbnk-anti-fraud-service","/v1/af/client/test/ping"};
     @Autowired
     DiscoveryClient discoveryClient;
     @Override
@@ -103,17 +106,26 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public ResponseEntity<TransferResponse> initiateTransferRequest(TransactionRequest request, Authentication authentication) throws ServiceUnavailableException {
-        checkClientAvailable();
+        checkClientAvailable(DATA_SERVICE, dataClient);
+        checkClientAvailable(ANTI_FRAUD_SERVICE,antiFraudClient);
         RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) authentication.getCredentials();
         AccessToken accessToken = context.getToken();
         System.out.println(accessToken.toString());
-        return ResponseEntity.ok(client.post()
+        var fraud= dataClient.post()
+                .uri("/v1/af/client/tf/validate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", accessToken.toString())
+                .body( Mono.just(request), FraudValidationRequest.class)
+                .retrieve().bodyToMono(TransferResponse.class)
+                .block();
+        var res= ResponseEntity.ok(dataClient.post()
                 .uri("/v1/data/client/tf/send")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", accessToken.toString())
                 .body( Mono.just(request), TransferRequest.class)
                 .retrieve().bodyToMono(TransferResponse.class)
                 .block());
+        return res;
     }
 
     @Override
@@ -121,31 +133,36 @@ public class TransactionServiceImpl implements TransactionService {
         return null;
     }
 
-    private void checkClientAvailable() throws ServiceUnavailableException {
+    @Override
+    public TransactionResult executeCharge(TransactionRequest request) {
+        return null;
+    }
+
+    private WebClient checkClientAvailable(String[] service,WebClient webClient) throws ServiceUnavailableException {
         try {
             try {
-                if (client == null) createClient();
-                if (client.get()
-                        .uri("/v1/data/client/test/ping")
+                if (webClient == null) createClient(service[0]);
+                if (webClient.get()
+                        .uri(service[1])
                         .retrieve()
                         .bodyToMono(String.class)
                         .block()
-                        != "pong") createClient();
+                        != "pong")return createClient(service[0]);
             } catch (Exception e) {
-                createClient();
+                return createClient(service[0]);
             }
         }catch (Throwable err){
             if(err instanceof ServiceUnavailableException)throw err;
         }
+        return webClient;
     }
 
-    void createClient() throws ServiceUnavailableException{
+    WebClient  createClient(String service) throws ServiceUnavailableException{
         for (int i = 0; i < 3; i++) {
             try {
-                var serviceInstanceList = discoveryClient.getInstances(TARGET_SERVICE);
+                var serviceInstanceList = discoveryClient.getInstances(service);
                 String clientURI = serviceInstanceList.get(0).getUri().toString();
-                client = WebClient.create(clientURI);
-                return;
+                return WebClient.create(clientURI);
             } catch (Throwable ignored) {}
             try {Thread.sleep(5000);} catch (InterruptedException ignored) {}
         }

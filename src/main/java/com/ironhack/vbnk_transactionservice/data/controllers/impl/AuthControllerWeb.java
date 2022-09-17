@@ -1,9 +1,9 @@
 package com.ironhack.vbnk_transactionservice.data.controllers.impl;
 
 import com.ironhack.vbnk_transactionservice.data.controllers.AuthController;
-import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
+import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
+import com.ironhack.vbnk_transactionservice.data.http.request.TransactionRequest;
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransactionResult;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,8 @@ public class AuthControllerWeb implements AuthController {
     TransactionService service;
     @Override
     public ResponseEntity<TransferResponse> transfer( Authentication auth, TransactionRequest request) throws ServiceUnavailableException {
-        return service.initiateTransferRequest(request,auth);
+//        return service.initiateTransferRequest(auth,request);
+        return null; //TODO: 17/09/2022
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.ironhack.vbnk_transactionservice.repositories.impl;
 
-import com.ironhack.vbnk_transactionservice.data.dto.DataValidationRequest;
-import com.ironhack.vbnk_transactionservice.data.dto.DataValidationResponse;
+import com.ironhack.vbnk_transactionservice.data.http.request.FraudValidationRequest;
+import com.ironhack.vbnk_transactionservice.data.http.responses.DataValidationResponse;
 import com.ironhack.vbnk_transactionservice.repositories.DataRepository;
 import com.ironhack.vbnk_transactionservice.utils.Money;
 import lombok.SneakyThrows;
@@ -61,7 +61,7 @@ public class DataRepositoryVBNK implements DataRepository {
 //    }
 
     @Override
-    public DataValidationResponse validateAccount(DataValidationRequest request) {
+    public DataValidationResponse validateAccount(FraudValidationRequest request) {
         return null;
     }
 

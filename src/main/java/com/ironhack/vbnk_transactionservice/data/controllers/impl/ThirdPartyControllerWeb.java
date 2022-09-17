@@ -1,9 +1,9 @@
 package com.ironhack.vbnk_transactionservice.data.controllers.impl;
 
 import com.ironhack.vbnk_transactionservice.data.controllers.ThirdPartyController;
-import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
+import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
+import com.ironhack.vbnk_transactionservice.data.http.request.TransactionRequest;
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransactionResult;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

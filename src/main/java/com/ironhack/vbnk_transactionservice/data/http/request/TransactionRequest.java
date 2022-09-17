@@ -1,7 +1,8 @@
-package com.ironhack.vbnk_transactionservice.data.dto;
+package com.ironhack.vbnk_transactionservice.data.http.request;
 
 import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
+import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,9 +18,9 @@ import static com.ironhack.vbnk_transactionservice.data.TransactionState.PENDING
 public class TransactionRequest {
     TransactionType type;
     Instant expirationDate;
-    String originAccount;//could be ID or AccountNumber(if 3rd party)
-    String destAccount;
-    String senderID;
+    String sourceAccountRef;//could be ID or AccountNumber(if 3rd party)
+    String destinationAccountRef;
+    String sourceOwnerId;
     BigDecimal amount;
     Currency currency;
     TransactionDetails details;
@@ -30,9 +31,9 @@ public class TransactionRequest {
                 .setType(request.getType())
                 .setState(PENDING)
                 .setExpirationDate(request.getExpirationDate())
-                .setOriginAccount(request.getOriginAccount())
-                .setDestAccount(request.getDestAccount())
-                .setSenderID(request.getSenderID())
+                .setOriginAccount(request.getSourceAccountRef())
+                .setDestAccount(request.getDestinationAccountRef())
+                .setSenderID(request.getSourceOwnerId())
                 .setAmount(request.getAmount())
                 .setCurrency(request.getCurrency())
                 .setDetails(request.details);

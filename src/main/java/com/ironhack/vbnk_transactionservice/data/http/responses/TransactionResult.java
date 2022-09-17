@@ -1,4 +1,4 @@
-package com.ironhack.vbnk_transactionservice.data.dto;
+package com.ironhack.vbnk_transactionservice.data.http.responses;
 
 import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.DenyReason;

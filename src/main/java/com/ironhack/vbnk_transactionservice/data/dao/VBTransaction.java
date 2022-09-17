@@ -4,7 +4,7 @@ import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
 import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransactionResult;
 import com.ironhack.vbnk_transactionservice.utils.Money;
 import com.ironhack.vbnk_transactionservice.utils.MoneyConverter;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package com.ironhack.vbnk_transactionservice.data.controllers;
 
-import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionRequest;
-import com.ironhack.vbnk_transactionservice.data.dto.TransactionResult;
+import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
+import com.ironhack.vbnk_transactionservice.data.http.request.TransactionRequest;
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransactionResult;
 
 
 public interface ThirdPartyController {

@@ -1,7 +1,7 @@
 package com.ironhack.vbnk_transactionservice.repositories;
 
-import com.ironhack.vbnk_transactionservice.data.dto.DataValidationRequest;
-import com.ironhack.vbnk_transactionservice.data.dto.DataValidationResponse;
+import com.ironhack.vbnk_transactionservice.data.http.request.FraudValidationRequest;
+import com.ironhack.vbnk_transactionservice.data.http.responses.DataValidationResponse;
 import com.ironhack.vbnk_transactionservice.utils.Money;
 
 
@@ -15,7 +15,7 @@ public interface DataRepository {
 //
 //    List<AccountHolderDTO> getOwners(String accountRef);
 
-    DataValidationResponse validateAccount(DataValidationRequest request);
+    DataValidationResponse validateAccount(FraudValidationRequest request);
 
     boolean applyCharge(String accountRef, Money amount);
 

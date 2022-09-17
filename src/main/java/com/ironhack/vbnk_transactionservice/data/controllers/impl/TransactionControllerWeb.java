@@ -1,7 +1,7 @@
 package com.ironhack.vbnk_transactionservice.data.controllers.impl;
 
 import com.ironhack.vbnk_transactionservice.data.controllers.TransactionController;
-import com.ironhack.vbnk_transactionservice.data.dto.ConfirmationResult;
+import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import com.ironhack.vbnk_transactionservice.repositories.DataRepository;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
