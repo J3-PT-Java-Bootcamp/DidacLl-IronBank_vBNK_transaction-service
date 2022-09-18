@@ -1,5 +1,6 @@
 package com.ironhack.vbnk_transactionservice.data.http.request;
 
+import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,4 +21,8 @@ public class TransferRequest {
     private BigDecimal amount;
     private Currency currency;
     private String senderId;
+    String senderDisplayName;
+    String concept;
+
+
 }

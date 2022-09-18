@@ -4,7 +4,6 @@ import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
 import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
-import com.ironhack.vbnk_transactionservice.data.http.responses.TransactionResult;
 import com.ironhack.vbnk_transactionservice.utils.Money;
 import com.ironhack.vbnk_transactionservice.utils.MoneyConverter;
 import lombok.Getter;
@@ -21,41 +20,41 @@ import java.time.Instant;
 @NoArgsConstructor
 public class VBTransaction {
     @Id
-    String id;
+    private String id;
     @Enumerated(EnumType.STRING)
-    TransactionType type;
+    private TransactionType type;
     
     @Enumerated(EnumType.STRING)
-    TransactionState state;
-    @Embedded
-    TransactionResult result;
+    private TransactionState state;
     @CreationTimestamp @Column(updatable = false)
-    Instant creationDate;
+    private Instant creationDate;
     @UpdateTimestamp
-    Instant modification;
-    Instant expirationDate;
-    
-    String originAccountRef;//could be ID or AccountNumber(if 3rd party)
-    String destAccountRef;
-    String senderID;
+    private Instant modification;
+    private Instant expirationDate;
+
+    private String ownedAccountID;
+    private String foreignAccountRef;
+    private String senderID;
     @Convert(converter = MoneyConverter.class)
-    Money quantity;
+    private Money quantity;
     @Convert(converter = MoneyConverter.class)
-    Money resBalance;
+    private Money balance;
     @Embedded
-    TransactionDetails details;
+    private TransactionDetails details;
     public static VBTransaction fromDTO(TransactionDTO dto){
         return new VBTransaction().setId(dto.getId())
                 .setType(dto.getType())
                 .setState(dto.getState())
                 .setExpirationDate(dto.getExpirationDate())
-                .setOriginAccountRef(dto.getOriginAccount())
-                .setDestAccountRef(dto.getDestAccount())
+                .setOwnedAccountID(dto.getOwnedAccountID())
+                .setForeignAccountRef(dto.getForeignAccountRef())
                 .setSenderID(dto.getSenderID())
                 .setQuantity(new Money(dto.getAmount(),dto.getCurrency()))
-                .setResBalance(new Money(dto.getBalanceAmount(),dto.getBalanceCurrency()))
-                .setResult(dto.getResult())
+                .setBalance(new Money(dto.getBalanceAmount(),dto.getBalanceCurrency()))
                 .setDetails(dto.getDetails());
     }
+
+
+
 
 }
