@@ -8,20 +8,21 @@ import com.ironhack.vbnk_transactionservice.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.naming.ServiceUnavailableException;
 import java.net.http.HttpResponse;
 @RestController
+
 @RequestMapping("/v1/trans/main")
 public class TransactionControllerWeb implements TransactionController {
 
     @Autowired
     TransactionService service;
-
+    @GetMapping("/{ping}")
+    public String ping(Authentication auth, @PathVariable(name = "ping") String ping)   {
+        return ping.replace('i','o');
+    }
 
     @Override
     @PostMapping( "/trf")
