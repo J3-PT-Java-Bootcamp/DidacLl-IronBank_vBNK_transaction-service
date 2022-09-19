@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.naming.ServiceUnavailableException;
 import java.net.http.HttpResponse;
 @RestController
-@RequestMapping("v1/trans/main")
+@RequestMapping("/v1/trans/main")
 public class TransactionControllerWeb implements TransactionController {
 
     @Autowired
@@ -26,7 +26,7 @@ public class TransactionControllerWeb implements TransactionController {
     @Override
     @PostMapping( "/trf")
     public ResponseEntity<TransferResponse> transferTo( Authentication auth,@RequestBody TransferRequest request) throws ServiceUnavailableException {
-        return service.initiateTransferRequest(request,auth );
+        return service.initiateTransferRequest(auth,request );
     }
 
     @Override

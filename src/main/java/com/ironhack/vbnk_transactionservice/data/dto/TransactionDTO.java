@@ -1,9 +1,9 @@
 package com.ironhack.vbnk_transactionservice.data.dto;
 
-import com.ironhack.vbnk_transactionservice.data.TransactionDetails;
 import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.dao.VBTransaction;
+import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,15 +19,11 @@ public class TransactionDTO {
     private TransactionType type;
     private TransactionState state;
     private Instant expirationDate;
-    private Instant creationDate;
-    private String ownedAccountID;
-    private String foreignAccountRef;
-    private String senderID;
-    private BigDecimal amount;
-    private Currency currency;
+    private Instant updateDate;
+    private String subjAccount;
     private Currency balanceCurrency;
     private BigDecimal balanceAmount;
-    private TransactionDetails details;
+    private TransferRequest request;
 
 
 
@@ -35,16 +31,12 @@ public class TransactionDTO {
     public static TransactionDTO fromEntity(VBTransaction entity){
         return new TransactionDTO().setId(entity.getId())
                 .setType(entity.getType())
-                .setCreationDate(entity.getCreationDate())
+                .setUpdateDate(entity.getModification())
                 .setState(entity.getState())
                 .setExpirationDate(entity.getExpirationDate())
-                .setOwnedAccountID(entity.getOwnedAccountID())
-                .setForeignAccountRef(entity.getForeignAccountRef())
-                .setSenderID(entity.getSenderID())
-                .setAmount(entity.getQuantity().getAmount())
-                .setCurrency(entity.getQuantity().getCurrency())
-                .setBalanceAmount(entity.getBalance().getAmount())
-                .setBalanceCurrency(entity.getBalance().getCurrency())
-                .setDetails(entity.getDetails());
+                .setSubjAccount(entity.getSubjAccount())
+                .setBalanceAmount(entity.getCurrentAccountBalance().getAmount())
+                .setBalanceCurrency(entity.getCurrentAccountBalance().getCurrency())
+                .setRequest(entity.getRequest());
     }
 }

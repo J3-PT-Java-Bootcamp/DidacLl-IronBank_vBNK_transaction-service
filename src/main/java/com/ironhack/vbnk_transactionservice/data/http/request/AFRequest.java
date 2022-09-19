@@ -14,4 +14,8 @@ import java.math.BigDecimal;
 public class AFRequest {
     private BigDecimal amount;
     private String srcAccountNumber,senderId;
+
+    public static AFRequest fromTransferRequest(TransferRequest request){
+        return new AFRequest(request.getAmount(),request.getFromAccount(),request.getOrderingUserId());
+    }
 }

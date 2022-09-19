@@ -1,6 +1,7 @@
 package com.ironhack.vbnk_transactionservice.services.impl;
 
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
+import com.ironhack.vbnk_transactionservice.data.dao.VBTransaction;
 import com.ironhack.vbnk_transactionservice.data.http.request.AFRequest;
 import com.ironhack.vbnk_transactionservice.data.http.responses.AFResponse;
 import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
@@ -10,9 +11,10 @@ import com.ironhack.vbnk_transactionservice.data.http.responses.DataTransferResp
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import com.ironhack.vbnk_transactionservice.repositories.TransactionRepository;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
+import com.ironhack.vbnk_transactionservice.utils.Money;
+import com.ironhack.vbnk_transactionservice.utils.NotificationType;
 import com.ironhack.vbnk_transactionservice.utils.VBError;
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
-import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.MediaType;
@@ -24,6 +26,8 @@ import reactor.core.publisher.Mono;
 
 import javax.naming.ServiceUnavailableException;
 import java.net.http.HttpResponse;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static com.ironhack.vbnk_transactionservice.data.TransactionState.*;
 import static com.ironhack.vbnk_transactionservice.data.TransactionState.OK;
@@ -60,33 +64,30 @@ public class TransactionServiceImpl implements TransactionService {
 
 //-----------------------------------------------------------------------------------------------------INITIATE REQUESTS
     @Override
-    public ResponseEntity<TransferResponse> initiateTransferRequest(TransferRequest request, Authentication authentication) throws ServiceUnavailableException {
-        checkClientAvailable(DATA_SERVICE, dataClient);
-        checkClientAvailable(ANTI_FRAUD_SERVICE,antiFraudClient);
+    public ResponseEntity<TransferResponse> initiateTransferRequest( Authentication authentication,TransferRequest request) throws ServiceUnavailableException {
+        this.dataClient=checkClientAvailable(DATA_SERVICE, dataClient);
+        this.antiFraudClient=checkClientAvailable(ANTI_FRAUD_SERVICE,antiFraudClient);
         RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) authentication.getCredentials();
-        AccessToken accessToken = context.getToken();
-        System.out.println(accessToken.toString());
-        var afResponse= antiFraudClient.post()
-                .uri("/v1/af/client/validate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", accessToken.toString())
-                .body( Mono.just(request), AFRequest.class)
-                .retrieve().bodyToMono(AFResponse.class)
-                .block();
+        var accessToken = context.getIdTokenString();
+        AFResponse afResponse = antiFraudValidation(request, accessToken);
         if(afResponse!=null && afResponse.isAllValidated()) {
             if(afResponse.isAllOK()) {
-                var res = dataClient.post()
-                        .uri("/v1/data/client/tf/send")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", accessToken.toString())
-                        .body(Mono.just(request), TransferRequest.class)
-                        .retrieve().bodyToMono(DataTransferResponse.class)
-                        .block();
-
+                DataTransferResponse res=null;
+                try {
+                    res = dataClient.post()
+                            .uri("/v1/data/client/tf/send")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", accessToken)
+                            .body(Mono.just(request), TransferRequest.class)
+                            .retrieve().bodyToMono(DataTransferResponse.class)
+                            .block();
+                }catch(Throwable err){
+                    res=null;
+                }
                 //COMPLETE TRANSFER: CHARGE + INCOME
                 //RECEIVE TRANSFER: INCOME
                 //BLIND TRANSFER: CHARGE
-                createTransactionsFromTransfer(res);
+                if(res!=null)createTransactionsFromTransfer(res);
                 return ResponseEntity.ok(new TransferResponse().setState(OK));
             }
             return ResponseEntity.status(CONFLICT).body(fraudFail(afResponse.getFraudLevel()));
@@ -94,33 +95,8 @@ public class TransactionServiceImpl implements TransactionService {
         return ResponseEntity.status(BAD_REQUEST).body(new TransferResponse().setState(NOK).addErrors(FATAL_ERROR));
     }
 
-    private void createTransactionsFromTransfer(DataTransferResponse res) {
-        if(res !=null){
-            if(res.isSource()){
-                if(res.isEnoughFounds()&& res.isSrcAccountAvailable()){
-                    createTransaction(res.getRequest(),INCOME);
-                }
-            }
-            if(res.isDestination()){
-                if (res.isDstAccountAvailable()) {
-                    createTransaction(res.getRequest(),CHARGE);
-                }
-            }
-        }
-    }
-
-    private TransactionDTO createTransaction(TransferRequest request, TransactionType type) {
-        // TODO: 18/09/2022
-
-        //COMPLETE PAYMENT_ORDER: PAYMENT_ORDER(owner) + NOTIFICATION(dest)
-        //RECEIVE PAYMENT_ORDER: PAYMENT ORDER(3rd party) + NOTIFICATION(dest)
-        //BLIND PAYMENT_ORDER: PAYMENT_ORDER(owner) + NOTIFICATION
 
 
-
-        //repository.save();
-        return null;
-    }
 
     @Override
     public HttpResponse<TransferResponse> initiatePaymentRequest(TransferRequest request) {
@@ -133,10 +109,96 @@ public class TransactionServiceImpl implements TransactionService {
         return null;
     }
     @Override
-    public TransferResponse receiveBlindTransfer(TransferRequest request) {
-        return null;
+    public ResponseEntity<TransferResponse> receiveBlindTransfer(Authentication authentication,TransferRequest request) throws ServiceUnavailableException {
+        checkClientAvailable(DATA_SERVICE, dataClient);
+        checkClientAvailable(ANTI_FRAUD_SERVICE,antiFraudClient);
+        RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) authentication.getCredentials();
+        var accessToken = context.getIdTokenString();
+        AFResponse afResponse = antiFraudValidation(request, accessToken);
+        if(afResponse!=null && afResponse.isAllValidated()) {
+            if(afResponse.isAllOK()) {
+                var res = dataClient.post()
+                        .uri("/v1/data/client/tf/receive")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", accessToken.toString())
+                        .body(Mono.just(request), TransferRequest.class)
+                        .retrieve().bodyToMono(DataTransferResponse.class)
+                        .block();
+
+                //COMPLETE TRANSFER: CHARGE + INCOME
+                //RECEIVE TRANSFER: INCOME
+                //BLIND TRANSFER: CHARGE
+                if (res != null && res.isDestination() && (res.getErrors()==null||res.getErrors().isEmpty()))
+                    createTransaction(res, CHARGE);
+                return ResponseEntity.ok(new TransferResponse().setState(OK));
+            }
+            return ResponseEntity.status(CONFLICT).body(fraudFail(afResponse.getFraudLevel()));
+        }
+        return ResponseEntity.status(BAD_REQUEST).body(new TransferResponse().setState(NOK).addErrors(FATAL_ERROR));
     }
 //-------------------------------------------------------------------------------------------------------PRIVATE METHODS
+private void createTransactionsFromTransfer(DataTransferResponse res) {
+    if(res !=null && (res.getErrors()==null||res.getErrors().isEmpty())){
+        if(res.isSource()&&res.getSrcBalance()!=null){
+            createTransaction(res,INCOME);
+        }
+        if(res.isDestination()){
+                createTransaction(res,CHARGE);
+        }
+    }
+}
+
+    private TransactionDTO createTransaction(DataTransferResponse response, TransactionType type) {
+        var request= response.getRequest();
+        // TODO: 18/09/2022
+        switch (type){
+
+            case CHARGE -> {
+                return TransactionDTO.fromEntity(repository.save(new VBTransaction()
+                        .setState(OK)
+                        .setType(type)
+                        .setRequest(request)
+                        .setSubjAccount(request.getFromAccount())
+                        .setCurrentAccountBalance(new Money(response.getSrcBalance(),request.getCurrency()))
+                        .setExpirationDate(null)
+                ));
+            }
+            case INCOME -> {
+                return TransactionDTO.fromEntity(repository.save(new VBTransaction()
+                        .setState(OK)
+                        .setType(type)
+                        .setSubjAccount(request.getToAccount())
+                        .setCurrentAccountBalance(new Money(response.getDstBalance(),request.getCurrency()))
+                        .setRequest(request)
+                        .setExpirationDate(null)
+                ));
+            }
+            case PAYMENT_ORDER -> {
+                sendNotificationToOwner(request, NotificationType.PAYMENT_CONFIRM);
+                return TransactionDTO.fromEntity(repository.save(new VBTransaction()
+                        .setState(PENDING)
+                        .setType(type)
+                        .setSubjAccount(request.getFromAccount())
+                        .setCurrentAccountBalance(null)
+                        .setRequest(request)
+                        .setExpirationDate(Instant.now().plus(48L, ChronoUnit.HOURS))
+                ));
+            }
+            case BANK_INCOME -> {
+            }
+            case BANK_CHARGE -> {
+            }
+        }
+        //COMPLETE PAYMENT_ORDER: PAYMENT_ORDER(owner) + NOTIFICATION(dest)
+        //RECEIVE PAYMENT_ORDER: PAYMENT ORDER(3rd party) + NOTIFICATION(dest)
+        //BLIND PAYMENT_ORDER: PAYMENT_ORDER(owner) + NOTIFICATION
+        return null;
+    }
+
+    private void sendNotificationToOwner(TransferRequest sourceAccountRef, NotificationType paymentConfirm) {
+        // TODO: 19/09/2022 call to DataService to create a new notification
+    }
+
     private TransferResponse fraudFail(int fraudLevel) {
         var res= new TransferResponse().setState(NOK);
         VBError err = null;
@@ -160,9 +222,16 @@ public class TransactionServiceImpl implements TransactionService {
             }
         }
     }
-
-
-
+    private AFResponse antiFraudValidation(TransferRequest request, String accessToken) {
+        var afResponse= antiFraudClient.patch()
+                .uri("/v1/af/client/validate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", accessToken)
+                .body( Mono.just(AFRequest.fromTransferRequest(request)), AFRequest.class)
+                .retrieve().bodyToMono(AFResponse.class)
+                .block();
+        return afResponse;
+    }
 //---------------------------------------------------------------------------------------------------------CLIENT CONFIG
     private WebClient checkClientAvailable(String[] service,WebClient webClient) throws ServiceUnavailableException {
         try {
