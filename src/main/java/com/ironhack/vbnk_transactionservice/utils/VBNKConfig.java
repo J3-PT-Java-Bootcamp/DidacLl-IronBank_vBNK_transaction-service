@@ -2,6 +2,7 @@ package com.ironhack.vbnk_transactionservice.utils;
 
 
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
@@ -9,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VBNKConfig {
-    public static final String VBNK_ENTITY_CODE="1312";
-    public static final String VBNK_INT_ENTITY_CODE="ES51";
+    @Value("${vbnk.international.code}")
+    public static String VBNK_ENTITY_CODE;
+    @Value("${vbnk.entity.code}")
+    public static String VBNK_INT_ENTITY_CODE;
 
     public static final BigDecimal VBNK_PENALTY_FEE = BigDecimal.valueOf(40);
     public static final Money VBNK_CHECKING_MIN_BALANCE = new Money(BigDecimal.valueOf(250));
