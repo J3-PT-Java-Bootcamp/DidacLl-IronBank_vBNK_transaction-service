@@ -1,7 +1,9 @@
 package com.ironhack.vbnk_transactionservice.data.http.responses;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 @Getter
+@AllArgsConstructor
 public class AFResponse {
     int validationSpamBot=-1;
     int validationSpamHuman=-1;

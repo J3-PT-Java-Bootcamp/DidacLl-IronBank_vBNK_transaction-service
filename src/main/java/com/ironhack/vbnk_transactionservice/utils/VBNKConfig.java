@@ -1,6 +1,9 @@
 package com.ironhack.vbnk_transactionservice.utils;
 
 
+import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
+import org.springframework.security.core.Authentication;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,28 @@ public class VBNKConfig {
         var retVal= new ArrayList<Character>();
         for(char ch : chrLst)if(Character.isDigit(ch))retVal.add(ch);
         return retVal;
+    }
+
+    public static String getUserIdFromAuth(Authentication auth){
+        RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) auth.getCredentials();
+        return context.getToken().getSubject();
+    }
+    public static String getIdTokenFromAuth(Authentication auth){
+        RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) auth.getCredentials();
+        return context.getIdTokenString();
+    }
+    public static String getUsernameFromAuth(Authentication auth){
+        RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) auth.getCredentials();
+        return context.getToken().getPreferredUsername();
+    }
+    public static String getTokenStringFromAuth(Authentication auth){
+        RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) auth.getCredentials();
+        return context.getTokenString();
+    }
+    public static boolean isAdmin(Authentication auth){
+        RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) auth.getCredentials();
+        var roles= context.getToken().getResourceAccess().get("vbnk-sys").getRoles();
+        return roles.contains("admin");
     }
 
 }

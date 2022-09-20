@@ -9,6 +9,7 @@ import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
 import com.ironhack.vbnk_transactionservice.data.http.responses.DataTransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
+import com.ironhack.vbnk_transactionservice.data.http.views.StatementView;
 import com.ironhack.vbnk_transactionservice.repositories.TransactionRepository;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
 import com.ironhack.vbnk_transactionservice.utils.Money;
@@ -17,6 +18,7 @@ import com.ironhack.vbnk_transactionservice.utils.VBError;
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,12 +30,16 @@ import javax.naming.ServiceUnavailableException;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ironhack.vbnk_transactionservice.data.TransactionState.*;
 import static com.ironhack.vbnk_transactionservice.data.TransactionState.OK;
 import static com.ironhack.vbnk_transactionservice.data.TransactionType.CHARGE;
 import static com.ironhack.vbnk_transactionservice.data.TransactionType.INCOME;
 import static com.ironhack.vbnk_transactionservice.utils.VBError.*;
+import static com.ironhack.vbnk_transactionservice.utils.VBNKConfig.*;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
@@ -67,26 +73,25 @@ public class TransactionServiceImpl implements TransactionService {
     public ResponseEntity<TransferResponse> initiateTransferRequest( Authentication authentication,TransferRequest request) throws ServiceUnavailableException {
         this.dataClient=checkClientAvailable(DATA_SERVICE, dataClient);
         this.antiFraudClient=checkClientAvailable(ANTI_FRAUD_SERVICE,antiFraudClient);
-        RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) authentication.getCredentials();
-        var accessToken = context.getIdTokenString();
-        AFResponse afResponse = antiFraudValidation(request, accessToken);
+        var idToken = getIdTokenFromAuth(authentication);
+        var accessToken = getTokenStringFromAuth(authentication);
+        AFResponse afResponse = new AFResponse(0,0,0,0,0,true);// antiFraudValidation(request, accessToken);
+        var userId= getUserIdFromAuth(authentication);
+        request.setOrderingUserId(userId);
         if(afResponse!=null && afResponse.isAllValidated()) {
             if(afResponse.isAllOK()) {
                 DataTransferResponse res=null;
                 try {
                     res = dataClient.post()
-                            .uri("/v1/data/client/tf/send")
+                            .uri("/v1/data/main/tf/send")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", accessToken)
+                            .header("Authorization", "Bearer "+accessToken)
                             .body(Mono.just(request), TransferRequest.class)
                             .retrieve().bodyToMono(DataTransferResponse.class)
                             .block();
                 }catch(Throwable err){
                     res=null;
                 }
-                //COMPLETE TRANSFER: CHARGE + INCOME
-                //RECEIVE TRANSFER: INCOME
-                //BLIND TRANSFER: CHARGE
                 if(res!=null)createTransactionsFromTransfer(res);
                 return ResponseEntity.ok(new TransferResponse().setState(OK));
             }
@@ -103,6 +108,13 @@ public class TransactionServiceImpl implements TransactionService {
         // TODO: 18/09/2022
         return null;
     }
+
+    @Override
+    public List<StatementView> getAccountStatements(int pag, String account) {
+        var page= repository.findAllBySubjAccountOrderByModificationDesc(account, PageRequest.of(pag,10));
+        return page.stream().map(StatementView::fromEntity).collect(Collectors.toCollection(ArrayList::new));
+    }
+
     @Override
     public HttpResponse<TransactionDTO> updatePendingTransaction(ConfirmationResult result) {
         // TODO: 18/09/2022
