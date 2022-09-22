@@ -2,7 +2,6 @@ package com.ironhack.vbnk_transactionservice.services;
 
 import com.ironhack.vbnk_transactionservice.data.TransactionType;
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
-import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.dto.TransactionDTO;
 import com.ironhack.vbnk_transactionservice.data.http.responses.DataTransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
@@ -20,11 +19,9 @@ public interface TransactionService {
     ResponseEntity<TransferResponse> receiveBlindTransfer(Authentication authentication,TransferRequest request) throws ServiceUnavailableException;
 
 
-    HttpResponse<TransactionDTO> getTransaction(String id);
+    ResponseEntity<TransactionDTO> getTransaction(String id);
 
 //    TransactionDTO createTransaction(DataTransferResponse request);
-
-    HttpResponse<TransactionDTO> updatePendingTransaction(ConfirmationResult result);
 
     void delete(String id);
 

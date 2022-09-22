@@ -2,7 +2,6 @@ package com.ironhack.vbnk_transactionservice.data.controllers;
 
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
 import com.ironhack.vbnk_transactionservice.data.http.request.UpdateTransactionRequest;
-import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.views.StatementView;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,11 @@ public interface TransactionController {
     ResponseEntity<TransferResponse> transferTo(Authentication auth, TransferRequest request) throws ServiceUnavailableException;
 
     HttpResponse<TransferResponse> orderPaymentTo(Authentication auth, TransferRequest request);
-    void updatePendingTransaction(Authentication auth,ConfirmationResult result);
+    void confirmPendingTransaction(Authentication auth, String id) throws ServiceUnavailableException;
 
     @PostMapping("/main/statements/{pag}")
     List<StatementView> getStatements(Authentication auth, @PathVariable(name = "pag") int pag, @RequestBody String account);
 
     @PostMapping("/client/update")
-    void registerBankUpdate(UpdateTransactionRequest request);
+    void registerBankUpdate(UpdateTransactionRequest request) throws ServiceUnavailableException;
 }

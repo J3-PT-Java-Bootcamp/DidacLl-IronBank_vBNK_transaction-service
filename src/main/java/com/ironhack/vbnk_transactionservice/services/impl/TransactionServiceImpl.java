@@ -7,7 +7,6 @@ import com.ironhack.vbnk_transactionservice.data.http.request.AFRequest;
 import com.ironhack.vbnk_transactionservice.data.http.request.NotificationRequest;
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
 import com.ironhack.vbnk_transactionservice.data.http.responses.AFResponse;
-import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.http.responses.DataTransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.views.StatementView;
@@ -57,14 +56,14 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
-    public HttpResponse<TransactionDTO> getTransaction(String id) {
-        return null;
+    public ResponseEntity<TransactionDTO> getTransaction(String id) {
+        return ResponseEntity.ok(TransactionDTO.fromEntity(repository.findById(id).orElseThrow()));
     }
 
 
     @Override
     public void delete(String id) {
-
+        repository.deleteById(id);
     }
 
 
@@ -114,24 +113,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public HttpResponse<TransactionDTO> updatePendingTransaction(ConfirmationResult result) {
-        // TODO: 18/09/2022
-        return null;
-    }
-
-    @Override
     public ResponseEntity<TransferResponse> receiveBlindTransfer(Authentication authentication, TransferRequest request) throws ServiceUnavailableException {
         checkClientAvailable(DATA_SERVICE, dataClient);
         checkClientAvailable(ANTI_FRAUD_SERVICE, antiFraudClient);
         RefreshableKeycloakSecurityContext context = (RefreshableKeycloakSecurityContext) authentication.getCredentials();
-        var accessToken = context.getIdTokenString();
+        var accessToken = context.getTokenString();
         AFResponse afResponse = antiFraudValidation(request, accessToken);
         if (afResponse != null && afResponse.isAllValidated()) {
             if (afResponse.isAllOK()) {
                 var res = dataClient.post()
                         .uri("/v1/data/client/tf/receive")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", accessToken.toString())
+                        .header("Authorization", "Bearer "+getTokenStringFromAuth(authentication))
                         .body(Mono.just(request), TransferRequest.class)
                         .retrieve().bodyToMono(DataTransferResponse.class)
                         .block();
@@ -274,7 +267,7 @@ public class TransactionServiceImpl implements TransactionService {
         var afResponse = antiFraudClient.patch()
                 .uri("/v1/af/client/validate")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", accessToken)
+                .header("Authorization", "Bearer "+accessToken)
                 .body(Mono.just(AFRequest.fromTransferRequest(request)), AFRequest.class)
                 .retrieve().bodyToMono(AFResponse.class)
                 .block();
