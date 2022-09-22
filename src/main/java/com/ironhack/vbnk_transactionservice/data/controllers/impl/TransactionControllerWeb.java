@@ -47,6 +47,7 @@ public class TransactionControllerWeb implements TransactionController {
     @Override
     @PostMapping("/main/pmt")
     public HttpResponse<TransferResponse> orderPaymentTo(Authentication auth,@RequestBody TransferRequest request) {
+        // TODO: 22/09/2022
         return service.initiatePaymentRequest(request);
     }
 

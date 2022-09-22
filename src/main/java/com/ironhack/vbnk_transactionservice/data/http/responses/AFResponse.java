@@ -33,7 +33,6 @@ public class AFResponse {
                 +validationReiterateTrans
                 + validationAmountAVG
                 +validationLegalReq);
-        return Math.min(total,3);
-
+        return Math.min(Math.floorDiv(total,2),3);
     }
 }

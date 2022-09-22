@@ -128,10 +128,6 @@ public class TransactionServiceImpl implements TransactionService {
                         .body(Mono.just(request), TransferRequest.class)
                         .retrieve().bodyToMono(DataTransferResponse.class)
                         .block();
-
-                //COMPLETE TRANSFER: CHARGE + INCOME
-                //RECEIVE TRANSFER: INCOME
-                //BLIND TRANSFER: CHARGE
                 if (res != null && res.isDestination() && (res.getErrors() == null || res.getErrors().isEmpty()))
                     createTransaction(res, CHARGE);
                 return ResponseEntity.ok(new TransferResponse().setState(OK));

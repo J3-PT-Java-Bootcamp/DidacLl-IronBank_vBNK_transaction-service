@@ -14,13 +14,11 @@ public class MoneyConverter implements AttributeConverter<Money, String> {
 
     @Override
     public String convertToDatabaseColumn(Money value) {
-        // TODO: 06/09/2022 Convert Money into parseable string
         return value.toParseableString();
     }
 
     @Override
     public Money convertToEntityAttribute(String dbData) {
-        // TODO: 06/09/2022 Parse string into Money
         var val = dbData.split("//");
         return new Money(new BigDecimal(val[0]), Currency.getInstance(val[1]));
     }
