@@ -3,6 +3,7 @@ package com.ironhack.vbnk_transactionservice.data.http.responses;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.ironhack.vbnk_transactionservice.data.TransactionState;
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
+import com.ironhack.vbnk_transactionservice.data.http.request.UpdateTransactionRequest;
 import com.ironhack.vbnk_transactionservice.utils.VBError;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,5 @@ public class TransferResponse {
         else this.errors.addAll(List.of(errors));
         return this;
     }
+
 }

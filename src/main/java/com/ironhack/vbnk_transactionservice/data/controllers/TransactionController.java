@@ -1,6 +1,7 @@
 package com.ironhack.vbnk_transactionservice.data.controllers;
 
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
+import com.ironhack.vbnk_transactionservice.data.http.request.UpdateTransactionRequest;
 import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.views.StatementView;
@@ -22,4 +23,7 @@ public interface TransactionController {
 
     @PostMapping("/main/statements/{pag}")
     List<StatementView> getStatements(Authentication auth, @PathVariable(name = "pag") int pag, @RequestBody String account);
+
+    @PostMapping("/client/update")
+    void registerBankUpdate(UpdateTransactionRequest request);
 }

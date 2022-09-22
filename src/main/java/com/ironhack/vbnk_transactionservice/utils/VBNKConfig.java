@@ -1,6 +1,7 @@
 package com.ironhack.vbnk_transactionservice.utils;
 
 
+import org.bouncycastle.pqc.crypto.newhope.NHOtherInfoGenerator;
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -14,7 +15,10 @@ public class VBNKConfig {
     public static String VBNK_ENTITY_CODE;
     @Value("${vbnk.entity.code}")
     public static String VBNK_INT_ENTITY_CODE;
+    @Value("${vbnk.entity.name}")
+    public static String VBNK_ENTITY_NAME;
 
+    public static final String VBNK_MAIN_ACCOUNT = "vbnk_main";
     public static final BigDecimal VBNK_PENALTY_FEE = BigDecimal.valueOf(40);
     public static final Money VBNK_CHECKING_MIN_BALANCE = new Money(BigDecimal.valueOf(250));
     public static final BigDecimal VBNK_MONTH_MAINTENANCE_FEE = BigDecimal.valueOf(12);

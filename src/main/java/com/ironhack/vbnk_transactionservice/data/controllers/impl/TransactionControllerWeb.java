@@ -2,11 +2,12 @@ package com.ironhack.vbnk_transactionservice.data.controllers.impl;
 
 import com.ironhack.vbnk_transactionservice.data.controllers.TransactionController;
 import com.ironhack.vbnk_transactionservice.data.http.request.TransferRequest;
+import com.ironhack.vbnk_transactionservice.data.http.request.UpdateTransactionRequest;
 import com.ironhack.vbnk_transactionservice.data.http.responses.ConfirmationResult;
+import com.ironhack.vbnk_transactionservice.data.http.responses.DataTransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import com.ironhack.vbnk_transactionservice.data.http.views.StatementView;
 import com.ironhack.vbnk_transactionservice.services.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +16,21 @@ import javax.naming.ServiceUnavailableException;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+import static com.ironhack.vbnk_transactionservice.data.TransactionType.BANK_CHARGE;
+import static com.ironhack.vbnk_transactionservice.data.TransactionType.BANK_INCOME;
+
 @RestController
 
 @RequestMapping("/v1/trans")
 public class TransactionControllerWeb implements TransactionController {
 
-    @Autowired
+    final
     TransactionService service;
+
+    public TransactionControllerWeb(TransactionService service) {
+        this.service = service;
+    }
+
     @GetMapping("/public/{ping}")
     public String ping(Authentication auth, @PathVariable(name = "ping") String ping)   {
         return ping.replace('i','o');
@@ -50,5 +59,12 @@ public class TransactionControllerWeb implements TransactionController {
                                              @PathVariable(name = "pag") int pag,
                                              @RequestBody String account) {
         return service.getAccountStatements(pag,account);
+    }
+
+    @Override
+    @PostMapping("/client/update")
+    public void registerBankUpdate(UpdateTransactionRequest request){
+        service.createTransaction(DataTransferResponse.fromUpdateRequest(request),request.isCharge()?BANK_CHARGE:BANK_INCOME);
+        service.checkPendingTransactions(request.getAccountId());
     }
 }

@@ -159,13 +159,15 @@ private void createTransactionsFromTransfer(DataTransferResponse res) {
         }
     }
 }
-
-    private TransactionDTO createTransaction(DataTransferResponse response, TransactionType type) {
+    @Override
+    public TransactionDTO createTransaction(DataTransferResponse response, TransactionType type) {
         var request= response.getRequest();
-        // TODO: 18/09/2022
         switch (type){
 
-            case CHARGE -> {
+            case BANK_CHARGE : {
+                sendNotificationToOwner(request, NotificationType.BANK_CHARGES_INTERESTS);
+            }
+            case CHARGE : {
                 return TransactionDTO.fromEntity(repository.save(new VBTransaction()
                         .setState(OK)
                         .setType(type)
@@ -175,7 +177,10 @@ private void createTransactionsFromTransfer(DataTransferResponse res) {
                         .setExpirationDate(null)
                 ));
             }
-            case INCOME -> {
+            case BANK_INCOME : {
+                sendNotificationToOwner(request, NotificationType.BANK_CHARGES_INTERESTS);
+            }
+            case INCOME : {
                 return TransactionDTO.fromEntity(repository.save(new VBTransaction()
                         .setState(OK)
                         .setType(type)
@@ -185,7 +190,7 @@ private void createTransactionsFromTransfer(DataTransferResponse res) {
                         .setExpirationDate(null)
                 ));
             }
-            case PAYMENT_ORDER -> {
+            case PAYMENT_ORDER : {
                 sendNotificationToOwner(request, NotificationType.PAYMENT_CONFIRM);
                 return TransactionDTO.fromEntity(repository.save(new VBTransaction()
                         .setState(PENDING)
@@ -196,15 +201,19 @@ private void createTransactionsFromTransfer(DataTransferResponse res) {
                         .setExpirationDate(Instant.now().plus(48L, ChronoUnit.HOURS))
                 ));
             }
-            case BANK_INCOME -> {
-            }
-            case BANK_CHARGE -> {
+
+        }
+        return null;
+    }
+
+    @Override
+    public void checkPendingTransactions(String accountId) {
+        var list = repository.findAllBySubjAccountAndState(accountId,PENDING);
+        for(var trans:list){
+            if(trans.getExpirationDate().isAfter(Instant.now())){
+                repository.delete(trans);
             }
         }
-        //COMPLETE PAYMENT_ORDER: PAYMENT_ORDER(owner) + NOTIFICATION(dest)
-        //RECEIVE PAYMENT_ORDER: PAYMENT ORDER(3rd party) + NOTIFICATION(dest)
-        //BLIND PAYMENT_ORDER: PAYMENT_ORDER(owner) + NOTIFICATION
-        return null;
     }
 
     private void sendNotificationToOwner(TransferRequest sourceAccountRef, NotificationType paymentConfirm) {

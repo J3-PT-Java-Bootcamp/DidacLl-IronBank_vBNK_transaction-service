@@ -40,10 +40,12 @@ public class WebSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapt
                 .antMatchers("/v1/trans/client/**").permitAll()
                 .antMatchers("/v1/trans/public/**").permitAll()
                 .antMatchers("/v1/trans/**").hasRole("developer")
+                .antMatchers("/docs/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
+
 }

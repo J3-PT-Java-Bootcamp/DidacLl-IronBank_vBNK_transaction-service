@@ -1,5 +1,6 @@
 package com.ironhack.vbnk_transactionservice.data.http.request;
 
+import com.ironhack.vbnk_transactionservice.data.http.responses.TransferResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,5 @@ public class TransferRequest {
     private Currency currency;
     String senderDisplayName;
     String concept;
-
 
 }

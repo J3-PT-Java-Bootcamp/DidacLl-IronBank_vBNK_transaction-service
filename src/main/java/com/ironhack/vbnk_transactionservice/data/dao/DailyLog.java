@@ -1,5 +1,6 @@
 package com.ironhack.vbnk_transactionservice.data.dao;
 
+import com.ironhack.vbnk_transactionservice.data.dto.LogDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,19 +13,13 @@ import javax.persistence.Id;
 import java.time.LocalDate;
 
 @Entity
-@NoArgsConstructor
 @Getter @Setter
+@NoArgsConstructor
 public class DailyLog {
     @Id @GenericGenerator(name = "date_based_id_generator",
             strategy = "com.ironhack.vbnk_transactionservice.utils.LogIdGenerator")
     @GeneratedValue(generator = "date_based_id_generator")
-
     String id;
-    @UpdateTimestamp
-    LocalDate updateDate;
-    Long transferCounter;
-    Long paymentCounter;
-    Long interestCounter;
-    Long feeCounter;
+
 
 }
