@@ -32,7 +32,7 @@ public class TransactionControllerWeb implements TransactionController {
     public TransactionControllerWeb(TransactionService service) {
         this.service = service;
     }
-
+@Override
     @GetMapping("/public/{ping}")
     public String ping(Authentication auth, @PathVariable(name = "ping") String ping)   {
         return ping.replace('i','o');
