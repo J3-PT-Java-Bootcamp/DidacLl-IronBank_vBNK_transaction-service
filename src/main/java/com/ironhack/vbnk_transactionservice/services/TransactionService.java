@@ -35,7 +35,7 @@ public interface TransactionService {
 
     List<StatementView> getAccountStatements(int pag, String account);
 
-    TransactionDTO createTransaction(DataTransferResponse response, TransactionType type);
+    TransactionDTO createTransaction(DataTransferResponse response, TransactionType type) throws ServiceUnavailableException;
 
     void checkPendingTransactions(String accountId);
 }
